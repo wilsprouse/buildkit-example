@@ -62,9 +62,11 @@ sudo ctr -n buildkit run --rm hello-world:latest test-container
 
 ## How It Works
 
-The program uses BuildKit's Low-Level Build (LLB) API to:
-1. Start with an Alpine Linux base image
-2. Run a simple echo command during build
+The program uses BuildKit to:
+1. Read the included Dockerfile (which is based on Alpine Linux)
+2. Build it using the dockerfile.v0 frontend
 3. Export the result as an image to containerd
+
+The Dockerfile includes a simple CMD that echoes "Hello, World!" when run.
 
 BuildKit uses containerd as its content store backend, so images built with BuildKit are automatically available in containerd without needing a separate push step.

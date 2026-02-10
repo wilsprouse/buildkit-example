@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/moby/buildkit/client"
-	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/util/progress/progressui"
 	"golang.org/x/sync/errgroup"
 )
@@ -28,18 +27,13 @@ func run() error {
 	}
 	defer c.Close()
 
-	// Define the build using LLB (Low-Level Build)
-	// This creates a simple alpine-based image with hello world
-	state := llb.Image("alpine:latest")
-
-	// Convert to definition
-	def, err := state.Marshal(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to marshal state: %w", err)
-	}
-
-	// Build options - export to containerd image store
+	// Build using the Dockerfile frontend
 	solveOpt := client.SolveOpt{
+		LocalDirs: map[string]string{
+			"context":    ".",
+			"dockerfile": ".",
+		},
+		Frontend: "dockerfile.v0",
 		Exports: []client.ExportEntry{
 			{
 				Type: client.ExporterImage,
@@ -55,7 +49,7 @@ func run() error {
 	eg, ctx := errgroup.WithContext(ctx)
 
 	eg.Go(func() error {
-		_, err := c.Solve(ctx, def, solveOpt, ch)
+		_, err := c.Solve(ctx, nil, solveOpt, ch)
 		return err
 	})
 
