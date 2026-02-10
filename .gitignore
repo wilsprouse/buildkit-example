@@ -1,0 +1,15 @@
+# Binaries
+buildkit-example
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Temporary files
+/tmp/
